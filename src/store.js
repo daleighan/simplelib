@@ -6,8 +6,23 @@ const createStore = (data = {}) => {
         cb();
       }
     },
-    get: key => {
+    get: (key, cb) => {
       return data[key];
+      if (cb) {
+        cb();
+      }
+    },
+    showAll: cb => {
+      console.log(data);
+      if (cb) {
+        cb();
+      }
+    },
+    delete: prop => {
+      delete data[prop];
+      if (cb) {
+        cb();
+      }
     },
   };
 };
