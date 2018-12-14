@@ -1,1 +1,2 @@
-import createStore from './store';
+const store = require('./store');
+

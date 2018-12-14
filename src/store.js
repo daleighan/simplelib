@@ -12,6 +12,4 @@ const createStore = (data = {}) => {
   };
 };
 
-const store = createStore();
-store.set('key', 'val', () => console.log(store.get('key')));
-console.log(store.get('key'));
+module.exports = createStore;
