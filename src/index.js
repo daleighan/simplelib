@@ -1,2 +1,6 @@
-const store = require('./store');
+const createStore = require('./store');
+
+module.exports = {
+  createStore,
+}
 
