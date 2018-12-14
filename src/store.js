@@ -8,9 +8,6 @@ const createStore = (data = {}) => {
     },
     get: (key, cb) => {
       return data[key];
-      if (cb) {
-        cb();
-      }
     },
     showAll: cb => {
       console.log(data);

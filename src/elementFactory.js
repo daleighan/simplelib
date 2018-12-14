@@ -1,5 +1,7 @@
 const elementFactory = (name, HTML, store, functions) => {
-  let context;
+  if (!name.match('-')) {
+    throw 'Invalid custom element name. Each custom element name must contain at list one "-" character'
+  }
   if (!customElements.get(name)) {
     customElements.define(
       name,
@@ -14,13 +16,15 @@ const elementFactory = (name, HTML, store, functions) => {
         }
       },
     );
-  }
-  let newElement = document.createElement(name);
-  context = newElement;
-  let child = new DOMParser().parseFromString(HTML, 'text/html').body.firstChild
-  console.log('child', child);
-  newElement.appendChild(child);
-  return newElement;
+    let newElement = document.createElement(name);
+    let child = new DOMParser().parseFromString(HTML, 'text/html').body
+      .firstChild;
+    child.context = newElement;
+    newElement.appendChild(child);
+    return newElement;
+  } else {
+    throw "Element name is already taken. Please use a unique identifier for each new element."
+  } 
 };
 
 module.exports = elementFactory;
