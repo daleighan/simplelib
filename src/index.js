@@ -1,7 +1,7 @@
 const createStore = require('./store');
-const component = require('./component');
+const elementFactory = require('./elementFactory');
 
 module.exports = {
   createStore,
-  component,
+  elementFactory,
 };

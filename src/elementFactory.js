@@ -6,9 +6,7 @@ const elementFactory = (name, HTML, store, functions) => {
         constructor() {
           super();
           this.store = store;
-          for (let func in functions) {
-            this[func] = functions[func];
-          }
+          Object.assign(this, functions);
         }
         getStore() {
           this.store.showAll();
@@ -17,7 +15,6 @@ const elementFactory = (name, HTML, store, functions) => {
     );
   }
   const newElement = document.createElement(name);
-  console.log(newElement);
   newElement.innerHTML = HTML;
   return newElement;
 };

@@ -18,7 +18,7 @@ const createStore = (data = {}) => {
         cb();
       }
     },
-    delete: prop => {
+    delete: (prop, cb) => {
       delete data[prop];
       if (cb) {
         cb();
