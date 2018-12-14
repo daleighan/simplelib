@@ -1,12 +1,13 @@
-const elementFactory = (HTML, name) => {
+const elementFactory = (name, HTML) => {
   customElements.define(name, class Component extends HTMLElement {
-    constructor(HTMLString, name) {
+    constructor() {
       super();
       const shadow = this.attachShadow({mode: 'open'});
-      shadow.innerHTML = HTMLString;
     }
   });
-  return document.createElement(name, HTML);
+  const newEl = document.createElement(name);
+  newEl.shadowRoot.innerHTML = HTML;
+  return newEl;
 }
 
 module.exports = elementFactory;
