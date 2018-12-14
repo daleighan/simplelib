@@ -1,4 +1,5 @@
 const elementFactory = (name, HTML, store, functions) => {
+  let context;
   if (!customElements.get(name)) {
     customElements.define(
       name,
@@ -14,8 +15,11 @@ const elementFactory = (name, HTML, store, functions) => {
       },
     );
   }
-  const newElement = document.createElement(name);
-  newElement.innerHTML = HTML;
+  let newElement = document.createElement(name);
+  context = newElement;
+  let child = new DOMParser().parseFromString(HTML, 'text/html').body.firstChild
+  console.log('child', child);
+  newElement.appendChild(child);
   return newElement;
 };
 
