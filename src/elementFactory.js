@@ -1,38 +1,43 @@
 const createStore = require('./store');
 
 const createTemplate = string => {
+  string = string.replace(/(\r\n\t|\n|\r\t)/gm,"");
   let expressions = [];
   let toSlice = [];
   let insideExp = false;
-  let currentExp = '';
-  let currentSlice = [0];
+  let isExp = false;
+  let currentSection = '';
   for (let i = 0; i < string.length; i++) {
-    if (string[i] === '{' && string[i - 1] === '{') {
+    if (string[i] === '{' && string[i + 2] === '{') {
+      i += 3
+      expressions.push({
+        string: currentSection,
+        type: 'str',
+      });
+      currentSection = '';
       insideExp = true;
-      currentSlice.push(i - 1);
-      toSlice.push(currentSlice);
-      currentSlice = [];
+      if (string[i - 1] === 'e') {
+        isExp = true;
+      }
     } else if (string[i] === '}' && string[i + 1] === '}') {
+      expressions.push({
+        string: currentSection,
+        type: isExp ? 'exp' : 'func',
+      });
       insideExp = false;
-      expressions.push(currentExp);
-      currentExp = '';
-      currentSlice.push(i + 2);
-    } else if (insideExp) {
-      currentExp += string[i];
+      isExp = false;
+      currentSection = '';
+      i += 2;
     }
+    currentSection += string[i];
   }
-  toSlice.push(currentSlice);
-  let partials = [];
-  for (let slice of toSlice) {
-    partials.push(string.slice(slice[0], slice[1]));
-  }
-  return {
-    expressions,
-    partials,
-  };
+  expressions.push({
+    string: currentSection,
+    type: 'str',
+  });
+  console.log('expressions: ', expressions);
+  return expressions;
 };
-
-let seenExpressions = new Set; 
 
 const assembleTemplate = function() {
   let expressions = [...this.template.expressions];
@@ -42,10 +47,13 @@ const assembleTemplate = function() {
     output += partials.shift();
     if (expressions.length) {
       let currentExp = expressions.shift();
+      console.log('exp', currentExp);
       let result = eval(currentExp);
+      console.log('result', result);
       if (typeof result === 'function') {
-        result = result.toString();
-        output += '"' + result + '"';
+        console.log(this.store.showAll());
+        console.log('stringy', result.toString());
+        output += `"(${result.toString()})()"`;
       } else if (result !== undefined) {
         output += result;
       } else {
@@ -54,7 +62,7 @@ const assembleTemplate = function() {
     }
   }
   output += partials.shift();
-  console.log('output:', output);
+  console.log('output', output);
   return output;
 };
 
@@ -70,7 +78,6 @@ const elementFactory = (name, HTML, store, functions, eventListeners) => {
           super();
           this.name = name;
           this.store = store;
-          //this.attachShadow({mode: 'open'});
           Object.assign(this, functions);
           this.store.connect(this);
           this.context = this;
@@ -85,7 +92,7 @@ const elementFactory = (name, HTML, store, functions, eventListeners) => {
             'text/html',
           ).body.firstChild;
           this.appendChild(child);
-          console.log('child: ', child);
+          console.log('child', child);
           return child;
         }
       },
