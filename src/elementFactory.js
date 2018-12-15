@@ -1,3 +1,5 @@
+const createStore = require('./store');
+
 const createTemplate = string => {
   let expressions = [];
   let toSlice = [];
@@ -30,6 +32,8 @@ const createTemplate = string => {
   };
 };
 
+let seenExpressions = new Set; 
+
 const assembleTemplate = function() {
   let expressions = [...this.template.expressions];
   let partials = [...this.template.partials];
@@ -39,7 +43,10 @@ const assembleTemplate = function() {
     if (expressions.length) {
       let currentExp = expressions.shift();
       let result = eval(currentExp);
-      if (result) {
+      if (typeof result === 'function') {
+        result = result.toString();
+        output += '"' + result + '"';
+      } else if (result !== undefined) {
         output += result;
       } else {
         output += currentExp;
@@ -47,6 +54,7 @@ const assembleTemplate = function() {
     }
   }
   output += partials.shift();
+  console.log('output:', output);
   return output;
 };
 
@@ -60,8 +68,9 @@ const elementFactory = (name, HTML, store, functions, eventListeners) => {
       class Component extends HTMLElement {
         constructor() {
           super();
+          this.name = name;
           this.store = store;
-          this.attachShadow({mode: 'open'});
+          //this.attachShadow({mode: 'open'});
           Object.assign(this, functions);
           this.store.connect(this);
           this.context = this;
@@ -75,7 +84,8 @@ const elementFactory = (name, HTML, store, functions, eventListeners) => {
             assembleTemplate.call(this),
             'text/html',
           ).body.firstChild;
-          this.shadowRoot.appendChild(child);
+          this.appendChild(child);
+          console.log('child: ', child);
           return child;
         }
       },
@@ -91,7 +101,7 @@ const elementFactory = (name, HTML, store, functions, eventListeners) => {
         ? queue.concat(Array.from(current.children))
         : queue;
     }
-    newElement.shadowRoot.appendChild(child);
+    newElement.appendChild(child);
     return newElement;
   } else {
     throw 'Element name is already taken. Please use a unique identifier for each new element.';
