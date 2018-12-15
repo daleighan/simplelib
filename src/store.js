@@ -9,7 +9,7 @@ const createStore = (data = {}, connectedElements = []) => {
     get: (key, cb) => {
       return data[key];
     },
-    showAll: function() {
+    showAll: () => {
       return {
         data: {...data},
         connectedElements: [...connectedElements],
