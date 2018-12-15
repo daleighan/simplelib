@@ -1,11 +1,55 @@
-const elementFactory = (
-  name,
-  HTML,
-  store,
-  functions,
-  eventListeners,
-  slots,
-) => {
+const createTemplate = string => {
+  let expressions = [];
+  let toSlice = [];
+  let insideExp = false;
+  let currentExp = '';
+  let currentSlice = [0];
+  for (let i = 0; i < string.length; i++) {
+    if (string[i] === '{' && string[i - 1] === '{') {
+      insideExp = true;
+      currentSlice.push(i - 1);
+      toSlice.push(currentSlice);
+      currentSlice = [];
+    } else if (string[i] === '}' && string[i + 1] === '}') {
+      insideExp = false;
+      expressions.push(currentExp);
+      currentExp = '';
+      currentSlice.push(i + 2);
+    } else if (insideExp) {
+      currentExp += string[i];
+    }
+  }
+  toSlice.push(currentSlice);
+  let partials = [];
+  for (let slice of toSlice) {
+    partials.push(string.slice(slice[0], slice[1]));
+  }
+  return {
+    expressions,
+    partials,
+  };
+};
+
+const assembleTemplate = function(template) {
+  console.log('this: ', this.context.store.showAll())
+  let output = "";
+  while (template.expressions.length && template.partials.length) {
+    output += template.partials.shift();
+    if (template.expressions.length) {
+      let currentExp = template.expressions.shift();
+      let result = eval(currentExp);
+      if (result) {
+        output += result;
+      } else {
+        output += currentExp;
+      }
+    }
+  }
+  output += template.partials.shift();
+  return output;
+}
+
+const elementFactory = (name, HTML, store, functions, eventListeners) => {
   if (!name.match('-')) {
     throw 'Invalid custom element name. Each custom element name must contain at list one "-" character';
   }
@@ -19,6 +63,9 @@ const elementFactory = (
           this.attachShadow({mode: 'open'});
           Object.assign(this, functions);
           this.store.connect(this);
+          this.context = this;
+          this.template = createTemplate(HTML);
+          console.log(assembleTemplate.call(this, this.template));
         }
         getStore() {
           this.store.showAll();
