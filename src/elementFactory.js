@@ -30,13 +30,14 @@ const createTemplate = string => {
   };
 };
 
-const assembleTemplate = function(template) {
-  console.log('this: ', this.context.store.showAll())
-  let output = "";
-  while (template.expressions.length && template.partials.length) {
-    output += template.partials.shift();
-    if (template.expressions.length) {
-      let currentExp = template.expressions.shift();
+const assembleTemplate = function() {
+  let expressions = [...this.template.expressions];
+  let partials = [...this.template.partials];
+  let output = '';
+  while (expressions.length && partials.length) {
+    output += partials.shift();
+    if (expressions.length) {
+      let currentExp = expressions.shift();
       let result = eval(currentExp);
       if (result) {
         output += result;
@@ -45,9 +46,9 @@ const assembleTemplate = function(template) {
       }
     }
   }
-  output += template.partials.shift();
+  output += partials.shift();
   return output;
-}
+};
 
 const elementFactory = (name, HTML, store, functions, eventListeners) => {
   if (!name.match('-')) {
@@ -65,16 +66,22 @@ const elementFactory = (name, HTML, store, functions, eventListeners) => {
           this.store.connect(this);
           this.context = this;
           this.template = createTemplate(HTML);
-          console.log(assembleTemplate.call(this, this.template));
         }
         getStore() {
           this.store.showAll();
         }
+        render() {
+          let child = new DOMParser().parseFromString(
+            assembleTemplate.call(this),
+            'text/html',
+          ).body.firstChild;
+          this.shadowRoot.appendChild(child);
+          return child;
+        }
       },
     );
     let newElement = document.createElement(name);
-    let child = new DOMParser().parseFromString(HTML, 'text/html').body
-      .firstChild;
+    let child = newElement.render();
     child.context = newElement;
     let queue = [child];
     while (queue.length) {
