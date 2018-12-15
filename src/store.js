@@ -1,7 +1,7 @@
 const createStore = (data = {}, connectedElements = []) => {
   return {
-    set: (key, val, cb) => {
-      data[key] = val;
+    set: (updateObj, cb) => {
+      data = {...data, ...updateObj};
       if (cb) {
         cb();
       }

@@ -1,7 +1,7 @@
 const createStore = require('./store');
 
 const createTemplate = string => {
-  string = string.replace(/(\r\n\t|\n|\r\t)/gm,"");
+  string = string.replace(/(\r\n\t|\n|\r\t)/gm, '');
   let expressions = [];
   let insideExp = false;
   let isExp = false;
@@ -11,7 +11,7 @@ const createTemplate = string => {
       if (string[i + 1] === 'e') {
         isExp = true;
       }
-      i += 3
+      i += 3;
       expressions.push({
         string: currentSection,
         type: 'str',
@@ -38,14 +38,17 @@ const createTemplate = string => {
 };
 
 const assembleTemplate = function() {
-  return this.template.map(item => {
-    if (item.type === 'exp') {
-      return eval(item.string);
-    } if (item.type === 'func') {
+  return this.template
+    .map(item => {
+      if (item.type === 'exp') {
+        return eval(item.string);
+      }
+      if (item.type === 'func') {
+        return item.string;
+      }
       return item.string;
-    }
-    return item.string;
-  }).join('');
+    })
+    .join('');
 };
 
 const elementFactory = (name, HTML, store, functions, eventListeners) => {
