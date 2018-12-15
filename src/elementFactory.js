@@ -9,6 +9,10 @@ const createTemplate = string => {
   let currentSection = '';
   for (let i = 0; i < string.length; i++) {
     if (string[i] === '{' && string[i + 2] === '{') {
+      if (string[i + 1] === 'e') {
+        console.log('here');
+        isExp = true;
+      }
       i += 3
       expressions.push({
         string: currentSection,
@@ -16,10 +20,8 @@ const createTemplate = string => {
       });
       currentSection = '';
       insideExp = true;
-      if (string[i - 1] === 'e') {
-        isExp = true;
-      }
     } else if (string[i] === '}' && string[i + 1] === '}') {
+      console.log(isExp, currentSection);
       expressions.push({
         string: currentSection,
         type: isExp ? 'exp' : 'func',
@@ -40,30 +42,14 @@ const createTemplate = string => {
 };
 
 const assembleTemplate = function() {
-  let expressions = [...this.template.expressions];
-  let partials = [...this.template.partials];
-  let output = '';
-  while (expressions.length && partials.length) {
-    output += partials.shift();
-    if (expressions.length) {
-      let currentExp = expressions.shift();
-      console.log('exp', currentExp);
-      let result = eval(currentExp);
-      console.log('result', result);
-      if (typeof result === 'function') {
-        console.log(this.store.showAll());
-        console.log('stringy', result.toString());
-        output += `"(${result.toString()})()"`;
-      } else if (result !== undefined) {
-        output += result;
-      } else {
-        output += currentExp;
-      }
+  return this.template.map(item => {
+    if (item.type === 'exp') {
+      return eval(item.string);
+    } if (item.type === 'func') {
+      return item.string;
     }
-  }
-  output += partials.shift();
-  console.log('output', output);
-  return output;
+    return item.string;
+  }).join('');
 };
 
 const elementFactory = (name, HTML, store, functions, eventListeners) => {
@@ -87,10 +73,12 @@ const elementFactory = (name, HTML, store, functions, eventListeners) => {
           this.store.showAll();
         }
         render() {
+          console.log(this.template);
           let child = new DOMParser().parseFromString(
             assembleTemplate.call(this),
             'text/html',
           ).body.firstChild;
+          console.log('child', child);
           this.appendChild(child);
           console.log('child', child);
           return child;
