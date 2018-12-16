@@ -1,52 +1,15 @@
-const createStore = require('./store');
-
-const createTemplate = string => {
-  string = string.replace(/(\r\n\t|\n|\r\t)/gm, '');
-  let expressions = [];
-  let insideExp = false;
-  let isExp = false;
-  let currentSection = '';
-  for (let i = 0; i < string.length; i++) {
-    if (string[i] === '{' && string[i + 2] === '{') {
-      if (string[i + 1] === 'e') {
-        isExp = true;
-      }
-      i += 3;
-      expressions.push({
-        string: currentSection,
-        type: 'str',
-      });
-      currentSection = '';
-      insideExp = true;
-    } else if (string[i] === '}' && string[i + 1] === '}') {
-      expressions.push({
-        string: currentSection,
-        type: isExp ? 'exp' : 'func',
-      });
-      insideExp = false;
-      isExp = false;
-      currentSection = '';
-      i += 2;
-    }
-    currentSection += string[i];
-  }
-  expressions.push({
-    string: currentSection,
-    type: 'str',
-  });
-  return expressions;
-};
+const createTemplate = require('./createTemplate');
 
 const assembleTemplate = function() {
   return this.template
-    .map(item => {
-      if (item.type === 'exp') {
-        return eval(item.string);
+    .map(section => {
+      if (section.type === 'exp') {
+        return eval(section.string);
       }
-      if (item.type === 'func') {
-        return item.string;
+      if (section.type === 'func') {
+        return section.string;
       }
-      return item.string;
+      return section.string;
     })
     .join('');
 };

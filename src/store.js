@@ -1,7 +1,13 @@
-const createStore = (data = {}, connectedElements = []) => {
+const createStore = (data = {}, isDebug = false, connectedElements = []) => {
   return {
     set: (updateObj, cb) => {
+      if (isDebug) {
+        console.log('%c Store Before: ', 'color: red; font-size: 13px', data);
+      }
       data = {...data, ...updateObj};
+      if (isDebug) {
+        console.log('%c Store After: ', 'color: green; font-size: 13px;', data);
+      }
       connectedElements.forEach(el => el.render());
       if (cb) {
         cb();
