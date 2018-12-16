@@ -12,19 +12,18 @@ const elementFactory = (name, HTML, store, functions, eventListeners) => {
         constructor() {
           super();
           this.name = name;
-          this.store = store;
-          Object.assign(this, functions);
-          Object.assign(this, store);
+          Object.assign(this, functions, store);
           this.context = this;
           this.context.connect(this);
           this.template = createTemplate(HTML);
+          this.shadow = this.attachShadow({mode: 'open'});
         }
         getStore() {
           this.store.showAll();
         }
         render() {
-          if (this.childNodes.length) {
-            this.removeChild(this.childNodes[0]);
+          if (this.shadow.childNodes.length) {
+            this.shadow.removeChild(this.shadow.childNodes[0]);
           }
           let child = new DOMParser().parseFromString(
             assembleTemplate.call(this),
@@ -39,7 +38,7 @@ const elementFactory = (name, HTML, store, functions, eventListeners) => {
               ? queue.concat(Array.from(current.children))
               : queue;
           }
-          this.appendChild(child);
+          this.shadow.appendChild(child);
           return child;
         }
       },
