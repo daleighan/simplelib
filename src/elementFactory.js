@@ -14,8 +14,9 @@ const elementFactory = (name, HTML, store, functions, eventListeners) => {
           this.name = name;
           this.store = store;
           Object.assign(this, functions);
-          this.store.connect(this);
+          Object.assign(this, store);
           this.context = this;
+          this.context.connect(this);
           this.template = createTemplate(HTML);
         }
         getStore() {
