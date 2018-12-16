@@ -5,7 +5,7 @@ const assembleTemplate = function() {
         return eval(section.string);
       }
       if (section.type === 'func') {
-        return section.string;
+        return "'" + section.string + "'";
       }
       return section.string;
     })
