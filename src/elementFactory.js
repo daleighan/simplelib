@@ -1,18 +1,5 @@
 const createTemplate = require('./createTemplate');
-
-const assembleTemplate = function() {
-  return this.template
-    .map(section => {
-      if (section.type === 'exp') {
-        return eval(section.string);
-      }
-      if (section.type === 'func') {
-        return section.string;
-      }
-      return section.string;
-    })
-    .join('');
-};
+const assembleTemplate = require('./assembleTemplate');
 
 const elementFactory = (name, HTML, store, functions, eventListeners) => {
   if (!name.match('-')) {

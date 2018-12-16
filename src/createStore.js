@@ -1,12 +1,26 @@
-const createStore = (data = {}, isDebug = false, connectedElements = []) => {
+const createStore = (data = {}, name='default-store', isDebug = false, connectedElements = []) => {
+  if (isDebug) {
+    console.log(
+      `%c store debugging turned on for ${name}`,
+      'color: purple; font-size: 13px',
+    );
+  }
   return {
     set: (updateObj, cb) => {
       if (isDebug) {
-        console.log('%c Store Before: ', 'color: red; font-size: 13px', data);
+        console.log(
+          `%c ${name} before: `,
+          'color: red; font-size: 13px',
+          data,
+        );
       }
       data = {...data, ...updateObj};
       if (isDebug) {
-        console.log('%c Store After: ', 'color: green; font-size: 13px;', data);
+        console.log(
+          `%c ${name} after: `,
+          'color: green; font-size: 13px;',
+          data,
+        );
       }
       connectedElements.forEach(el => el.render());
       if (cb) {

@@ -1,5 +1,5 @@
 const createTemplate = string => {
-  string = string.trim().replace( /\s\s+/g, ' ');
+  string = string.trim().replace(/\s\s+/g, ' ');
   let sections = [];
   let insideExp = false;
   let isExp = false;
