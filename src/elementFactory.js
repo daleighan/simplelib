@@ -72,10 +72,22 @@ const elementFactory = (name, HTML, store, functions, eventListeners) => {
           this.store.showAll();
         }
         render() {
+          if (this.childNodes.length) {
+            this.removeChild(this.childNodes[0]);
+          }
           let child = new DOMParser().parseFromString(
             assembleTemplate.call(this),
             'text/html',
           ).body.firstChild;
+          child.context = newElement;
+          let queue = [child];
+          while (queue.length) {
+            let current = queue.shift();
+            current.context = newElement;
+            queue = current.children
+              ? queue.concat(Array.from(current.children))
+              : queue;
+          }
           this.appendChild(child);
           return child;
         }
@@ -83,16 +95,6 @@ const elementFactory = (name, HTML, store, functions, eventListeners) => {
     );
     let newElement = document.createElement(name);
     let child = newElement.render();
-    child.context = newElement;
-    let queue = [child];
-    while (queue.length) {
-      let current = queue.shift();
-      current.context = newElement;
-      queue = current.children
-        ? queue.concat(Array.from(current.children))
-        : queue;
-    }
-    newElement.appendChild(child);
     return newElement;
   } else {
     throw 'Element name is already taken. Please use a unique identifier for each new element.';

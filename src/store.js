@@ -2,6 +2,7 @@ const createStore = (data = {}, connectedElements = []) => {
   return {
     set: (updateObj, cb) => {
       data = {...data, ...updateObj};
+      connectedElements.forEach(el => el.render());
       if (cb) {
         cb();
       }
