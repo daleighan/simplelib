@@ -13,8 +13,8 @@ const elementFactory = (name, HTML, store, functions, eventListeners) => {
           super();
           this.name = name;
           Object.assign(this, functions, store);
-          this.context = this;
-          this.context.connect(this);
+          //this.context = this;
+          this.connect(this);
           this.template = createTemplate(HTML);
           this.shadow = this.attachShadow({mode: 'open'});
         }
@@ -29,11 +29,13 @@ const elementFactory = (name, HTML, store, functions, eventListeners) => {
             assembleTemplate.call(this),
             'text/html',
           ).body.firstChild;
-          child.context = newElement;
+          //child.context = newElement;
+          Object.assign(child, this);
           let queue = [child];
           while (queue.length) {
             let current = queue.shift();
-            current.context = newElement;
+            //current.context = newElement;
+            Object.assign(current, this);
             queue = current.children
               ? queue.concat(Array.from(current.children))
               : queue;
@@ -44,7 +46,7 @@ const elementFactory = (name, HTML, store, functions, eventListeners) => {
       },
     );
     let newElement = document.createElement(name);
-    let child = newElement.render();
+    newElement.render();
     return newElement;
   } else {
     throw 'Element name is already taken. Please use a unique identifier for each new element.';

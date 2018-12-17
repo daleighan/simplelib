@@ -48,7 +48,7 @@ const createStore = (data = {}, name='default-store', isDebug = false, connected
         cb();
       }
     },
-    showConnected: () => {
+    showConnectedElements: () => {
       return [...connectedElements];
     },
   };
