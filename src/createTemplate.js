@@ -37,7 +37,6 @@ const createTemplate = string => {
     string: currentSection,
     type: 'str',
   });
-  console.log('sections', sections);
   return sections;
 };
 

@@ -3,7 +3,11 @@ const assembleTemplate = function() {
     .map(section => {
       if (section.type === 'exp' || section.type === 'html') {
         try {
-          return eval(section.string);
+          let evaled = eval(section.string);
+          if (typeof evaled === 'object') {
+            return evaled.join('');
+          }
+          return evaled;
         } catch (e) {
           return section.string;
         }
