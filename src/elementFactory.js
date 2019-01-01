@@ -1,7 +1,7 @@
 const createTemplate = require('./createTemplate');
 const assembleTemplate = require('./assembleTemplate');
 
-const elementFactory = (name, HTML, store, functions, eventListeners) => {
+const elementFactory = (name, HTML, store, functions) => {
   if (!name.match('-')) {
     throw 'Invalid custom element name. Each custom element name must contain at list one "-" character';
   }
