@@ -7,6 +7,7 @@ const createStore = (data = {}, name='default-store', isDebug = false, connected
   }
   return {
     set: (updateObj, cb) => {
+      console.log(connectedElements);
       if (isDebug) {
         console.log(
           `%c ${name} before: `,
